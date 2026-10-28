@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador Pachek</title>
+<style>
+:root{--fondo:#14100c;--texto:#f2e8d5;--tenue:#b8a888;--oro:#d9a842;--borde:#5a4630}
+body{margin:0;background:var(--fondo);color:var(--texto);font-family:Georgia,serif;font-size:15px}
+main{max-width:1200px;margin:0 auto;padding:16px}
+h1,h2,h3{color:var(--oro);font-weight:600}
+h2{border-top:1px solid var(--borde);padding-top:14px;margin-top:28px}
+.panel{display:flex;flex-wrap:wrap;gap:12px;align-items:end;background:#0006;border:1px solid var(--borde);border-radius:10px;padding:12px}
+label{display:flex;flex-direction:column;gap:4px;color:var(--tenue);font-size:13px}
+select,input{background:#000;color:var(--texto);border:1px solid var(--borde);border-radius:6px;padding:6px;font-size:14px}
+button{background:#d9a842;color:#1c140b;border:0;border-radius:6px;padding:8px 16px;font-weight:700;cursor:pointer}
+table{border-collapse:collapse;width:100%;margin:6px 0 12px;font-size:14px}
+th,td{border-bottom:1px solid #ffffff14;padding:4px 8px;text-align:left}
+th{color:var(--tenue);font-weight:600}
+#estado{color:var(--tenue)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Simulador de Magic Pachek</h1>
+  <p style="color:var(--tenue)">Juega expediciones completas con bots sobre el motor real (reglas 5e). Grupos de héroes al azar, todos al nivel elegido; suben de nivel en la taberna si les alcanza la experiencia.</p>
+  <div class="panel">
+    <label>Nivel <select id="nivel"></select></label>
+    <label>Héroes <select id="tam"><option value="2">2</option><option value="3">3</option><option value="4" selected>4</option></select></label>
+    <label>Expedición <select id="expedicion"></select></label>
+    <label>Duración <select id="largo"></select></label>
+    <label>Dificultad <select id="dificultad"></select></label>
+    <label>Modificador <select id="modificador"></select></label>
+    <label>Expediciones <input id="n" type="number" value="40" min="1" max="2000" style="width:90px"></label>
+    <button id="correr">Simular</button>
+    <span id="estado"></span>
+  </div>
+  <div id="salida"></div>
+</main>
+<script src="reglas5e.js"></script>
+<script src="monstruos.js"></script>
+<script src="mapas.js"></script>
+<script src="heroes.js"></script>
+<script src="datos.js"></script>
+<script src="motor.js"></script>
+<script src="bot.js"></script>
+<script src="simulador.js"></script>
+<script>
+const opciones = (id, obj) => document.getElementById(id).innerHTML = Object.entries(obj).map(([k, v]) => `<option value="${k}">${v.nombre}</option>`).join('');
+opciones('expedicion', EXPEDICIONES); opciones('largo', LARGOS); opciones('dificultad', DIFICULTADES); opciones('modificador', MODIFICADORES);
+document.getElementById('nivel').innerHTML = Array.from({ length: R5.NIVEL_MAX }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('');
+document.getElementById('dificultad').value = 'normal'; document.getElementById('largo').value = 'larga';
+document.getElementById('correr').onclick = async () => {
+  const v = id => document.getElementById(id).value;
+  const cfg = { nivel: +v('nivel'), tam: +v('tam'), expedicion: v('expedicion'), largo: v('largo'), dificultad: v('dificultad'), modificador: v('modificador') };
+  const n = +v('n'), est = document.getElementById('estado');
+  est.textContent = 'Corriendo...';
+  const t0 = performance.now();
+  const inf = await correr(cfg, n, k => est.textContent = `${k} / ${n}`);
+  est.textContent = `Listo en ${((performance.now() - t0) / 1000).toFixed(1)} s`;
+  document.getElementById('salida').insertAdjacentHTML('afterbegin', pintar(inf));
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+# Lo que NO se publica en GitHub Pages (el repositorio es público).
+
+# Libros y descargas de D&D (con derechos de autor)
+*.pdf
+*.crdownload
+Emon Palace Courtyard - Print/
+
+# Arte sacado del Manual de Monstruos: sin él, los monstruos se ven con su emoji
+arte/monstruos/
+
+# Texto del Manual que usa la tubería que genera monstruos.js
+herramientas/manual_monstruos/
+
+# Fotos originales sin recortar (el juego usa las de arte/)
+/*.jpeg
+
+# Versión vieja de cartas
+version_cartas/
+
+# Basura de Python, comprimidos y del sistema
+__pycache__/
+*.pyc
+*.rar
+*.zip
+__MACOSX/
+desktop.ini
+Thumbs.db
